@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Route Optimizer Helper",
+  "version": "1.0.0",
+  "description": "Voegt een 'Optimaliseer route' knop toe aan Google Maps lijst-pagina's, die de lijst direct opent in route.vdhout.cc.",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.google.com/maps/*",
+        "https://maps.google.com/*",
+        "https://maps.app.goo.gl/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

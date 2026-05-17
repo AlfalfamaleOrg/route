@@ -78,7 +78,15 @@ btnReverse.addEventListener('click', reverseRoute);
 btnReset.addEventListener('click', reset);
 
 renderRecents();
-loadFromHash();
+const presetUrl = new URLSearchParams(location.search).get('list')
+  || new URLSearchParams(location.search).get('id');
+if (presetUrl) {
+  urlInput.value = presetUrl;
+  history.replaceState(null, '', location.pathname);
+  loadList();
+} else {
+  loadFromHash();
+}
 
 /**
  * Fetches the list from the PHP proxy and renders the unoptimized places.
