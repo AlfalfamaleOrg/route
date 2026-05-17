@@ -4,7 +4,7 @@
  * draws both routes on Leaflet.
  */
 
-const PROXY_URL = 'https://route-api.vdhout.cc/load';
+const PROXY_HOST = '';
 
 const OSRM_HOSTS = {
   driving: 'https://routing.openstreetmap.de/routed-car',
@@ -69,8 +69,7 @@ async function loadList() {
   btnLoad.disabled = true;
   setMsg(loadMsg, 'Bezig met laden...');
   try {
-    const endpoint = PROXY_URL ? `${PROXY_URL}?url=` : '?action=load&url=';
-    const res = await fetch(endpoint + encodeURIComponent(url));
+    const res = await fetch(`${PROXY_HOST}/load?url=` + encodeURIComponent(url));
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Onbekende fout');
     state.places = data.items;

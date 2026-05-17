@@ -2,15 +2,23 @@
 declare(strict_types=1);
 
 /**
- * Route Optimizer - serves the SPA and proxies Google Maps list requests.
+ * Route Optimizer - serves the SPA and proxies Google Maps list requests
+ * when running locally via `php -S 127.0.0.1:8765 -t public/ public/index.php`.
  *
- * GET /                 -> renders index.html
- * GET /?action=load&url=...
- *                       -> resolves a Google Maps list URL or ID and returns
+ * GET /load?url=...     -> resolves a Google Maps list URL or ID and returns
  *                          a JSON payload { title, items: [{name, lat, lng}, ...] }
+ * Any other path        -> falls through so PHP serves the static file.
  */
 
-if (($_GET['action'] ?? null) === 'load') {
+$reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+if (php_sapi_name() === 'cli-server' && $reqPath !== '/load' && $reqPath !== '/') {
+    $file = __DIR__ . $reqPath;
+    if (is_file($file)) {
+        return false;
+    }
+}
+
+if ($reqPath === '/load') {
     header('Content-Type: application/json; charset=utf-8');
     try {
         $input = trim((string) ($_GET['url'] ?? ''));

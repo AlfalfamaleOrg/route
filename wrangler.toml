@@ -1,7 +1,11 @@
 name = "route-proxy"
 main = "worker.js"
 compatibility_date = "2025-12-01"
+workers_dev = false
 
 routes = [
-  { pattern = "route-api.vdhout.cc", custom_domain = true }
+  { pattern = "route.vdhout.cc", custom_domain = true }
 ]
+
+[assets]
+directory = "./public"

@@ -4,9 +4,9 @@
  * the result on Leaflet and exports it to Google Maps directions.
  */
 
-// Cloudflare Worker (see worker.js). Leave empty to fall back to the local
-// PHP backend during development.
-const PROXY_URL = 'https://route-api.vdhout.cc/load';
+// Hostname of the Worker that handles /load. Empty = same-origin (the
+// Worker also serves this page via Workers Static Assets).
+const PROXY_HOST = '';
 
 const OSRM_HOSTS = {
   driving: 'https://routing.openstreetmap.de/routed-car',
@@ -90,8 +90,7 @@ async function loadList() {
   btnLoad.disabled = true;
   setMsg(loadMsg, 'Bezig met laden...');
   try {
-    const endpoint = PROXY_URL ? `${PROXY_URL}?url=` : '?action=load&url=';
-    const res = await fetch(endpoint + encodeURIComponent(url));
+    const res = await fetch(`${PROXY_HOST}/load?url=` + encodeURIComponent(url));
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Onbekende fout');
     state.places = data.items;
