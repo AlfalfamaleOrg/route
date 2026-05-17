@@ -4,9 +4,9 @@
  * the result on Leaflet and exports it to Google Maps directions.
  */
 
-// Set to your Cloudflare Worker URL (e.g. 'https://route-proxy.acme.workers.dev/load')
-// when hosting on GitHub Pages. Leave empty to use the local PHP backend.
-const PROXY_URL = '';
+// Cloudflare Worker (see worker.js). Leave empty to fall back to the local
+// PHP backend during development.
+const PROXY_URL = 'https://route-proxy.robvdhout.workers.dev/load';
 
 const OSRM_HOSTS = {
   driving: 'https://routing.openstreetmap.de/routed-car',

@@ -4,7 +4,7 @@
  * draws both routes on Leaflet.
  */
 
-const PROXY_URL = '';
+const PROXY_URL = 'https://route-proxy.robvdhout.workers.dev/load';
 
 const OSRM_HOSTS = {
   driving: 'https://routing.openstreetmap.de/routed-car',
