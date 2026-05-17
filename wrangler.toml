@@ -1,3 +1,7 @@
 name = "route-proxy"
 main = "worker.js"
 compatibility_date = "2025-12-01"
+
+routes = [
+  { pattern = "route-api.vdhout.cc", custom_domain = true }
+]
