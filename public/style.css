@@ -67,6 +67,39 @@ body {
 .tabs a:hover { color: var(--text); }
 .tabs a.active { color: var(--text); border-bottom-color: var(--accent); }
 
+.recents {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.recents.hidden { display: none; }
+.recents .recent-label {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.recents .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.recents .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: #eef2fb;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.12s;
+}
+.recents .chip:hover { background: #dde6f7; }
+.recents .chip .x { color: var(--muted); font-size: 14px; line-height: 1; }
+.recents .chip:hover .x { color: var(--danger); }
+
 .group-block {
   padding: 10px 0 12px 12px;
   border-left: 4px solid var(--accent);

@@ -20,6 +20,8 @@ const GMAPS_TRAVELMODE = {
 };
 const STORAGE_URL = 'route.lastUrl';
 const STORAGE_MODE = 'route.mode';
+const STORAGE_RECENTS = 'route.recents';
+const MAX_RECENTS = 8;
 
 const state = {
   places: [],
@@ -58,6 +60,7 @@ const btnReverse = $('btn-reverse');
 const partsList = $('parts-list');
 const btnReset = $('btn-reset');
 const resultMsg = $('result-msg');
+const recentsEl = $('recents');
 
 const savedUrl = localStorage.getItem(STORAGE_URL);
 if (savedUrl) urlInput.value = savedUrl;
@@ -74,6 +77,7 @@ btnLongestTop.addEventListener('click', () => runCompute(true));
 btnReverse.addEventListener('click', reverseRoute);
 btnReset.addEventListener('click', reset);
 
+renderRecents();
 loadFromHash();
 
 /**
@@ -103,6 +107,7 @@ async function loadList() {
     stepResult.classList.add('hidden');
     state.ordered = [];
     localStorage.setItem(STORAGE_URL, url);
+    saveRecent({ url, title: state.title, items: state.places });
     setMsg(loadMsg, `Geladen: ${state.places.length} plekken.`, 'ok');
   } catch (e) {
     setMsg(loadMsg, e.message, 'error');
@@ -706,4 +711,99 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
+}
+
+/**
+ * Reads the recents list from localStorage.
+ *
+ * @returns {Array<{url:string,title:string,items:Array,addedAt:number}>}
+ */
+function loadRecents() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_RECENTS) || '[]'); }
+  catch { return []; }
+}
+
+/**
+ * Saves or updates a list in recents (most-recent first, capped).
+ *
+ * @param {{url:string,title:string,items:Array}} entry
+ * @returns {void}
+ */
+function saveRecent(entry) {
+  if (!entry.items || !entry.items.length) return;
+  let recents = loadRecents().filter((r) => r.url !== entry.url);
+  recents.unshift({ ...entry, addedAt: Date.now() });
+  recents = recents.slice(0, MAX_RECENTS);
+  localStorage.setItem(STORAGE_RECENTS, JSON.stringify(recents));
+  renderRecents();
+}
+
+/**
+ * Removes a recent by URL.
+ *
+ * @param {string} url
+ * @returns {void}
+ */
+function removeRecent(url) {
+  const recents = loadRecents().filter((r) => r.url !== url);
+  localStorage.setItem(STORAGE_RECENTS, JSON.stringify(recents));
+  renderRecents();
+}
+
+/**
+ * Renders the recents chips under the URL input.
+ *
+ * @returns {void}
+ */
+function renderRecents() {
+  const recents = loadRecents();
+  if (!recents.length) {
+    recentsEl.classList.add('hidden');
+    recentsEl.innerHTML = '';
+    return;
+  }
+  recentsEl.innerHTML = `
+    <div class="recent-label">Recent</div>
+    <div class="chips">
+      ${recents.map((r) => `
+        <button class="chip" data-url="${escapeHtml(r.url)}" title="${escapeHtml(r.url)}">
+          <span>${escapeHtml(r.title || 'Lijst')} <small>(${r.items.length})</small></span>
+          <span class="x" data-remove="${escapeHtml(r.url)}" title="Verwijder">×</span>
+        </button>`).join('')}
+    </div>`;
+  recentsEl.classList.remove('hidden');
+  recentsEl.querySelectorAll('.chip').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const removeUrl = e.target.dataset && e.target.dataset.remove;
+      if (removeUrl) {
+        e.stopPropagation();
+        removeRecent(removeUrl);
+        return;
+      }
+      restoreRecent(btn.dataset.url);
+    });
+  });
+}
+
+/**
+ * Restores a previously loaded list from localStorage without hitting the proxy.
+ *
+ * @param {string} url
+ * @returns {void}
+ */
+function restoreRecent(url) {
+  const entry = loadRecents().find((r) => r.url === url);
+  if (!entry) return;
+  urlInput.value = entry.url;
+  state.places = entry.items;
+  state.title = entry.title || 'Lijst';
+  listTitle.textContent = `${state.title} (${state.places.length} plekken)`;
+  renderPlaceList();
+  drawUnordered();
+  fitMap();
+  stepOptions.classList.remove('hidden');
+  stepResult.classList.add('hidden');
+  state.ordered = [];
+  localStorage.setItem(STORAGE_URL, url);
+  setMsg(loadMsg, `Hersteld uit recents: ${state.places.length} plekken.`, 'ok');
 }

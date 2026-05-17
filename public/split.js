@@ -14,6 +14,8 @@ const OSRM_HOSTS = {
 const GMAPS_TRAVELMODE = { driving: 'driving', cycling: 'bicycling', walking: 'walking' };
 const STORAGE_URL = 'route.lastUrl';
 const STORAGE_MODE = 'route.mode';
+const STORAGE_RECENTS = 'route.recents';
+const MAX_RECENTS = 8;
 const GROUP_COLORS = ['#2f6fed', '#ff8a3d'];
 
 const state = { places: [], title: '', groups: [] };
@@ -41,6 +43,7 @@ const stepResult = $('step-result');
 const groupsEl = $('groups');
 const btnReset = $('btn-reset');
 const resultMsg = $('result-msg');
+const recentsEl = $('recents');
 
 const savedUrl = localStorage.getItem(STORAGE_URL);
 if (savedUrl) urlInput.value = savedUrl;
@@ -54,6 +57,8 @@ btnLoad.addEventListener('click', loadList);
 urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') loadList(); });
 btnSplitGo.addEventListener('click', runSplit);
 btnReset.addEventListener('click', reset);
+
+renderRecents();
 
 /**
  * Fetches the list via the proxy and prepares the options step.
@@ -82,6 +87,7 @@ async function loadList() {
     stepResult.classList.add('hidden');
     state.groups = [];
     localStorage.setItem(STORAGE_URL, url);
+    saveRecent({ url, title: state.title, items: state.places });
     setMsg(loadMsg, `Geladen: ${state.places.length} plekken.`, 'ok');
   } catch (e) {
     setMsg(loadMsg, e.message, 'error');
@@ -530,4 +536,89 @@ function numIcon(n, role, color) {
     iconSize: [26, 26],
     iconAnchor: [13, 13],
   });
+}
+
+/**
+ * @returns {Array<{url:string,title:string,items:Array,addedAt:number}>}
+ */
+function loadRecents() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_RECENTS) || '[]'); }
+  catch { return []; }
+}
+
+/**
+ * @param {{url:string,title:string,items:Array}} entry
+ * @returns {void}
+ */
+function saveRecent(entry) {
+  if (!entry.items || !entry.items.length) return;
+  let recents = loadRecents().filter((r) => r.url !== entry.url);
+  recents.unshift({ ...entry, addedAt: Date.now() });
+  recents = recents.slice(0, MAX_RECENTS);
+  localStorage.setItem(STORAGE_RECENTS, JSON.stringify(recents));
+  renderRecents();
+}
+
+/**
+ * @param {string} url
+ * @returns {void}
+ */
+function removeRecent(url) {
+  const recents = loadRecents().filter((r) => r.url !== url);
+  localStorage.setItem(STORAGE_RECENTS, JSON.stringify(recents));
+  renderRecents();
+}
+
+/**
+ * @returns {void}
+ */
+function renderRecents() {
+  const recents = loadRecents();
+  if (!recents.length) {
+    recentsEl.classList.add('hidden');
+    recentsEl.innerHTML = '';
+    return;
+  }
+  recentsEl.innerHTML = `
+    <div class="recent-label">Recent</div>
+    <div class="chips">
+      ${recents.map((r) => `
+        <button class="chip" data-url="${escapeHtml(r.url)}" title="${escapeHtml(r.url)}">
+          <span>${escapeHtml(r.title || 'Lijst')} <small>(${r.items.length})</small></span>
+          <span class="x" data-remove="${escapeHtml(r.url)}" title="Verwijder">×</span>
+        </button>`).join('')}
+    </div>`;
+  recentsEl.classList.remove('hidden');
+  recentsEl.querySelectorAll('.chip').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const removeUrl = e.target.dataset && e.target.dataset.remove;
+      if (removeUrl) {
+        e.stopPropagation();
+        removeRecent(removeUrl);
+        return;
+      }
+      restoreRecent(btn.dataset.url);
+    });
+  });
+}
+
+/**
+ * @param {string} url
+ * @returns {void}
+ */
+function restoreRecent(url) {
+  const entry = loadRecents().find((r) => r.url === url);
+  if (!entry) return;
+  urlInput.value = entry.url;
+  state.places = entry.items;
+  state.title = entry.title || 'Lijst';
+  listTitle.textContent = `${state.title} (${state.places.length} plekken)`;
+  renderPlaceList();
+  drawUnorderedMarkers();
+  fitMap();
+  stepOptions.classList.remove('hidden');
+  stepResult.classList.add('hidden');
+  state.groups = [];
+  localStorage.setItem(STORAGE_URL, url);
+  setMsg(loadMsg, `Hersteld uit recents: ${state.places.length} plekken.`, 'ok');
 }

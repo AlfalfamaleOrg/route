@@ -13,7 +13,7 @@
  */
 
 export default {
-  async fetch(request) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const cors = {
       'Access-Control-Allow-Origin': '*',
@@ -29,13 +29,33 @@ export default {
       });
     }
     const input = (url.searchParams.get('url') || '').trim();
+    const refresh = url.searchParams.get('refresh') === '1';
     if (!input) return jsonError('Geen URL of lijst-ID opgegeven.', cors);
     try {
       const listId = await resolveListId(input);
+      const cache = caches.default;
+      const cacheKey = new Request(`https://cache.route.vdhout.cc/list/${listId}`);
+      if (!refresh) {
+        const hit = await cache.match(cacheKey);
+        if (hit) {
+          const r = new Response(hit.body, hit);
+          for (const [k, v] of Object.entries(cors)) r.headers.set(k, v);
+          r.headers.set('X-Cache', 'HIT');
+          return r;
+        }
+      }
       const payload = await fetchList(listId);
-      return new Response(JSON.stringify(payload), {
-        headers: { 'Content-Type': 'application/json;charset=utf-8', ...cors },
+      const body = JSON.stringify(payload);
+      const fresh = new Response(body, {
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+          'Cache-Control': 'public, s-maxage=86400, max-age=300',
+          'X-Cache': 'MISS',
+          ...cors,
+        },
       });
+      ctx.waitUntil(cache.put(cacheKey, fresh.clone()));
+      return fresh;
     } catch (e) {
       return jsonError(e.message || String(e), cors);
     }
