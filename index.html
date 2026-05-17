@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Route optimizer</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <header>
+      <h1>Route optimizer</h1>
+      <nav class="tabs">
+        <a href="index.html" class="active">Eén route</a>
+        <a href="split.html">Twee groepen</a>
+      </nav>
+      <p class="sub">Plak een Google Maps lijst-URL en krijg een efficiënte route.</p>
+    </header>
+
+    <section class="step" id="step-load">
+      <label for="list-url">Google Maps lijst</label>
+      <input id="list-url" type="text" placeholder="https://maps.app.goo.gl/..." autocomplete="off">
+      <button id="btn-load" class="primary">Laad lijst</button>
+      <p class="hint" id="load-msg"></p>
+    </section>
+
+    <section class="step hidden" id="step-options">
+      <h2 id="list-title">Lijst</h2>
+      <ol id="place-list" class="places"></ol>
+
+      <fieldset>
+        <legend>Vervoer</legend>
+        <div class="mode-group">
+          <label class="mode"><input type="radio" name="mode" value="driving" checked><span>Auto</span></label>
+          <label class="mode"><input type="radio" name="mode" value="cycling"><span>Fiets</span></label>
+          <label class="mode"><input type="radio" name="mode" value="walking"><span>Lopen</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Start / eind</legend>
+        <label class="check">
+          <input type="checkbox" id="opt-current">
+          Gebruik mijn huidige locatie als startpunt
+        </label>
+        <label class="check">
+          <input type="checkbox" id="opt-roundtrip">
+          Eindig weer op het startpunt
+        </label>
+      </fieldset>
+
+      <div class="actions split-actions">
+        <button id="btn-shortest" class="primary">Kortste route</button>
+        <button id="btn-longest-top" class="primary">Langste route</button>
+      </div>
+      <p class="hint" id="opt-msg"></p>
+    </section>
+
+    <section class="step hidden" id="step-result">
+      <h2>Voorgestelde route</h2>
+      <p class="stats" id="stats"></p>
+      <div id="parts-list" class="split-list"></div>
+      <ol id="route-list" class="places ordered"></ol>
+      <div class="actions">
+        <button id="btn-reverse"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Omdraaien</button>
+        <button id="btn-reset" class="ghost">Opnieuw beginnen</button>
+      </div>
+      <p class="hint" id="result-msg"></p>
+    </section>
+  </aside>
+
+  <main class="map-wrap">
+    <div id="map"></div>
+  </main>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script src="script.js"></script>
+</body>
+</html>

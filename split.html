@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Route optimizer · twee groepen</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <header>
+      <h1>Route optimizer</h1>
+      <nav class="tabs">
+        <a href="index.html">Eén route</a>
+        <a href="split.html" class="active">Twee groepen</a>
+      </nav>
+      <p class="sub">Verdeel de plekken over twee groepen die ieder hun eigen efficiënte route lopen.</p>
+    </header>
+
+    <section class="step" id="step-load">
+      <label for="list-url">Google Maps lijst</label>
+      <input id="list-url" type="text" placeholder="https://maps.app.goo.gl/..." autocomplete="off">
+      <button id="btn-load" class="primary">Laad lijst</button>
+      <p class="hint" id="load-msg"></p>
+    </section>
+
+    <section class="step hidden" id="step-options">
+      <h2 id="list-title">Lijst</h2>
+      <ol id="place-list" class="places"></ol>
+
+      <fieldset>
+        <legend>Vervoer</legend>
+        <div class="mode-group">
+          <label class="mode"><input type="radio" name="mode" value="driving" checked><span>Auto</span></label>
+          <label class="mode"><input type="radio" name="mode" value="cycling"><span>Fiets</span></label>
+          <label class="mode"><input type="radio" name="mode" value="walking"><span>Lopen</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Opties</legend>
+        <label class="check">
+          <input type="checkbox" id="opt-roundtrip" checked>
+          Iedere groep eindigt op zijn eigen startpunt
+        </label>
+        <label class="check">
+          <input type="checkbox" id="opt-balance" checked>
+          Groepen even groot maken
+        </label>
+      </fieldset>
+
+      <button id="btn-split-go" class="primary">Verdeel &amp; optimaliseer</button>
+      <p class="hint" id="opt-msg"></p>
+    </section>
+
+    <section class="step hidden" id="step-result">
+      <h2>Verdeling</h2>
+      <div id="groups"></div>
+      <div class="actions">
+        <button id="btn-reset" class="ghost">Opnieuw beginnen</button>
+      </div>
+      <p class="hint" id="result-msg"></p>
+    </section>
+  </aside>
+
+  <main class="map-wrap">
+    <div id="map"></div>
+  </main>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script src="split.js"></script>
+</body>
+</html>
