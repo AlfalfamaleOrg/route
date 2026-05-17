@@ -6,7 +6,7 @@
 
 // Cloudflare Worker (see worker.js). Leave empty to fall back to the local
 // PHP backend during development.
-const PROXY_URL = 'https://route-proxy.robvdhout.workers.dev/load';
+const PROXY_URL = 'https://route-api.vdhout.cc/load';
 
 const OSRM_HOSTS = {
   driving: 'https://routing.openstreetmap.de/routed-car',
