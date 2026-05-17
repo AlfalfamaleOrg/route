@@ -86,9 +86,16 @@ async function resolveListId(input) {
 async function fetchList(listId) {
   const pb = `!1m4!1s${listId}!2e1!3m1!1e1!2e2!3e2!4i500`;
   const url = `https://www.google.com/maps/preview/entitylist/getlist?authuser=0&hl=nl&gl=nl&pb=${encodeURIComponent(pb)}`;
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36' },
-  });
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+    'Accept-Language': 'nl-NL,nl;q=0.9,en;q=0.8',
+  };
+  let res;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    res = await fetch(url, { headers });
+    if (res.status !== 429 && res.status !== 503) break;
+    await new Promise((r) => setTimeout(r, 200 + attempt * 300));
+  }
   if (!res.ok) throw new Error('Google gaf status ' + res.status);
   let raw = await res.text();
   if (raw.startsWith(")]}'")) raw = raw.substring(raw.indexOf('\n') + 1);
