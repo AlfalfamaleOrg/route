@@ -79,6 +79,22 @@ btnReset.addEventListener('click', reset);
 
 renderRecents();
 loadFromHash();
+initPanelToggle();
+
+/**
+ * Wires up the mobile-only "fullscreen map" toggle on the map wrapper.
+ *
+ * @returns {void}
+ */
+function initPanelToggle() {
+  const btn = document.getElementById('panel-toggle');
+  const app = document.querySelector('.app');
+  if (!btn || !app) return;
+  btn.addEventListener('click', () => {
+    app.classList.toggle('map-only');
+    setTimeout(() => map.invalidateSize(), 250);
+  });
+}
 
 /**
  * Fetches the list from the PHP proxy and renders the unoptimized places.

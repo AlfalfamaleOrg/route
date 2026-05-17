@@ -2,6 +2,7 @@ name = "route-proxy"
 main = "worker.js"
 compatibility_date = "2025-12-01"
 workers_dev = false
+preview_urls = true
 
 routes = [
   { pattern = "route.vdhout.cc", custom_domain = true }

@@ -59,6 +59,22 @@ btnSplitGo.addEventListener('click', runSplit);
 btnReset.addEventListener('click', reset);
 
 renderRecents();
+initPanelToggle();
+
+/**
+ * Wires up the mobile-only "fullscreen map" toggle.
+ *
+ * @returns {void}
+ */
+function initPanelToggle() {
+  const btn = document.getElementById('panel-toggle');
+  const app = document.querySelector('.app');
+  if (!btn || !app) return;
+  btn.addEventListener('click', () => {
+    app.classList.toggle('map-only');
+    setTimeout(() => map.invalidateSize(), 250);
+  });
+}
 
 /**
  * Fetches the list via the proxy and prepares the options step.
