@@ -59,6 +59,13 @@ btnSplitGo.addEventListener('click', runSplit);
 btnReset.addEventListener('click', reset);
 
 renderRecents();
+const presetSplitUrl = new URLSearchParams(location.search).get('list')
+  || new URLSearchParams(location.search).get('id');
+if (presetSplitUrl) {
+  urlInput.value = presetSplitUrl;
+  history.replaceState(null, '', location.pathname);
+  loadList();
+}
 initPanelToggle();
 
 /**
