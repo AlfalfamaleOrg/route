@@ -31,7 +31,14 @@
 
     <section class="step hidden" id="step-options">
       <h2 id="list-title">Lijst</h2>
-      <ol id="place-list" class="places"></ol>
+      <div class="collapsible" id="place-list-wrap">
+        <button type="button" class="collapsible-toggle" aria-expanded="true" aria-controls="place-list">
+          <span class="caret">▾</span>
+          <span>Plekken</span>
+          <span class="count" id="place-count">0</span>
+        </button>
+        <ol id="place-list" class="places"></ol>
+      </div>
 
       <fieldset>
         <legend>Vervoer</legend>

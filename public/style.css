@@ -346,22 +346,53 @@ fieldset legend {
 .marker-pin.end { background: #c43a3a; }
 .marker-pin.unordered { background: #6a7384; }
 
+.collapsible-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 4px;
+  background: transparent;
+  border: none;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  min-height: 36px;
+}
+.collapsible-toggle:hover { color: var(--text); background: transparent; }
+.collapsible-toggle .caret {
+  display: inline-block;
+  font-size: 14px;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+.collapsible-toggle .count { color: var(--text); font-weight: 600; text-transform: none; letter-spacing: 0; }
+.collapsible.collapsed > .places,
+.collapsible.collapsed > .group-list { display: none; }
+.collapsible.collapsed > .collapsible-toggle .caret { transform: rotate(-90deg); }
+
 .panel-toggle { display: none; }
 
 @media (max-width: 720px) {
   .app {
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 45vh;
+    grid-template-rows: 45vh 1fr;
+    grid-template-areas: "map" "panel";
     height: 100vh;
   }
+  .map-wrap { grid-area: map; min-height: 280px; }
   .panel {
+    grid-area: panel;
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
     padding: 14px 16px 18px;
     gap: 16px;
   }
   .panel header h1 { font-size: 17px; }
-  .map-wrap { min-height: 280px; }
 
   input[type="text"] {
     font-size: 16px;

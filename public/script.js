@@ -88,6 +88,41 @@ if (presetUrl) {
   loadFromHash();
 }
 initPanelToggle();
+initCollapsibles();
+
+/**
+ * Wires the toggle button of every .collapsible. On mobile the lists start
+ * collapsed; on desktop they stay open. Re-runs on viewport change.
+ *
+ * @returns {void}
+ */
+function initCollapsibles() {
+  document.querySelectorAll('.collapsible-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const c = btn.closest('.collapsible');
+      if (!c) return;
+      const willCollapse = !c.classList.contains('collapsed');
+      c.classList.toggle('collapsed', willCollapse);
+      btn.setAttribute('aria-expanded', String(!willCollapse));
+    });
+  });
+  applyCollapsedForViewport();
+  window.matchMedia('(max-width: 720px)').addEventListener('change', applyCollapsedForViewport);
+}
+
+/**
+ * Adds .collapsed to every .collapsible on mobile, removes on desktop.
+ *
+ * @returns {void}
+ */
+function applyCollapsedForViewport() {
+  const mobile = window.matchMedia('(max-width: 720px)').matches;
+  document.querySelectorAll('.collapsible').forEach((c) => {
+    c.classList.toggle('collapsed', mobile);
+    const btn = c.querySelector('.collapsible-toggle');
+    if (btn) btn.setAttribute('aria-expanded', String(!mobile));
+  });
+}
 
 /**
  * Wires up the mobile-only "fullscreen map" toggle on the map wrapper.
@@ -152,6 +187,8 @@ function renderPlaceList() {
     li.innerHTML = `<span class="num">${i + 1}</span><span><span class="name">${escapeHtml(p.name)}</span></span>`;
     placeList.appendChild(li);
   });
+  const c = document.getElementById('place-count');
+  if (c) c.textContent = String(state.places.length);
 }
 
 /**
@@ -357,6 +394,8 @@ function renderResult(geometry) {
     li.innerHTML = `<span class="num">${i + 1}</span><span><span class="name">${escapeHtml(stop.name)}</span></span>`;
     routeList.appendChild(li);
   });
+  const rc = document.getElementById('route-count');
+  if (rc) rc.textContent = String(state.ordered.filter((s) => !s.closing).length);
 
   stats.innerHTML = `<strong>${state.routeKm.toFixed(1)} km</strong> · ca. <strong>${formatDuration(state.routeMin)}</strong> rijden`;
 

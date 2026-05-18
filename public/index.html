@@ -31,7 +31,14 @@
 
     <section class="step hidden" id="step-options">
       <h2 id="list-title">Lijst</h2>
-      <ol id="place-list" class="places"></ol>
+      <div class="collapsible" id="place-list-wrap">
+        <button type="button" class="collapsible-toggle" aria-expanded="true" aria-controls="place-list">
+          <span class="caret">▾</span>
+          <span>Plekken</span>
+          <span class="count" id="place-count">0</span>
+        </button>
+        <ol id="place-list" class="places"></ol>
+      </div>
 
       <fieldset>
         <legend>Vervoer</legend>
@@ -65,7 +72,14 @@
       <h2>Voorgestelde route</h2>
       <p class="stats" id="stats"></p>
       <div id="parts-list" class="split-list"></div>
-      <ol id="route-list" class="places ordered"></ol>
+      <div class="collapsible" id="route-list-wrap">
+        <button type="button" class="collapsible-toggle" aria-expanded="true" aria-controls="route-list">
+          <span class="caret">▾</span>
+          <span>Volgorde</span>
+          <span class="count" id="route-count">0</span>
+        </button>
+        <ol id="route-list" class="places ordered"></ol>
+      </div>
       <div class="actions">
         <button id="btn-reverse"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Omdraaien</button>
         <button id="btn-reset" class="ghost">Opnieuw beginnen</button>

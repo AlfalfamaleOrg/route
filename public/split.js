@@ -67,6 +67,38 @@ if (presetSplitUrl) {
   loadList();
 }
 initPanelToggle();
+initCollapsibles();
+
+/**
+ * Wires every .collapsible-toggle and forces collapsed state on mobile.
+ *
+ * @returns {void}
+ */
+function initCollapsibles() {
+  document.querySelectorAll('.collapsible-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const c = btn.closest('.collapsible');
+      if (!c) return;
+      const willCollapse = !c.classList.contains('collapsed');
+      c.classList.toggle('collapsed', willCollapse);
+      btn.setAttribute('aria-expanded', String(!willCollapse));
+    });
+  });
+  applyCollapsedForViewport();
+  window.matchMedia('(max-width: 720px)').addEventListener('change', applyCollapsedForViewport);
+}
+
+/**
+ * @returns {void}
+ */
+function applyCollapsedForViewport() {
+  const mobile = window.matchMedia('(max-width: 720px)').matches;
+  document.querySelectorAll('.collapsible').forEach((c) => {
+    c.classList.toggle('collapsed', mobile);
+    const btn = c.querySelector('.collapsible-toggle');
+    if (btn) btn.setAttribute('aria-expanded', String(!mobile));
+  });
+}
 
 /**
  * Wires up the mobile-only "fullscreen map" toggle.
@@ -172,6 +204,8 @@ function renderPlaceList() {
     li.innerHTML = `<span class="num">${i + 1}</span><span><span class="name">${escapeHtml(p.name)}</span></span>`;
     placeList.appendChild(li);
   });
+  const c = document.getElementById('place-count');
+  if (c) c.textContent = String(state.places.length);
 }
 
 /**
